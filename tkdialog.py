@@ -36,6 +36,7 @@ class Dialog(tk.Toplevel):
 
         self.wait_window(self)
 
+        return self.result
     #
     # construction hooks
 
@@ -71,7 +72,7 @@ class Dialog(tk.Toplevel):
         self.withdraw()
         self.update_idletasks()
 
-        self.apply()
+        self.result = self.apply()
 
         self.cancel()
 
@@ -79,6 +80,7 @@ class Dialog(tk.Toplevel):
         # put focus back to the parent window
         self.parent.focus_set()
         self.destroy()
+        
 
     #
     # command hooks

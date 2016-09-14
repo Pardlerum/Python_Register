@@ -259,7 +259,7 @@ def GetRegisterList(dojoid):
 
     try:
         with con.cursor() as cur:
-            sql = '''SELECT User.NickName, User.FirstName, User.LastName, Register.Login, Register.Logout FROM Register 
+            sql = '''SELECT User.UserID, User.NickName, User.FirstName, User.LastName, Register.Login, Register.Logout FROM Register 
                      LEFT JOIN User on User.UserID = Register.UserID
                      WHERE DojoID = %s
                      ORDER BY Register.Login'''
