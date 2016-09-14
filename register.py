@@ -14,6 +14,7 @@ from tkdisclaimer import DisclaimerDialog
 from tkchangepassword import ChangePasswordDialog
 from tkphone import ChangePhoneDialog
 from tknewuser import AddUserDialog
+from tkmentorpassword import MentorPasswordDialog
 
 import mysqldb
 import mypassword as pw  # for password hashing and checking functions
@@ -28,6 +29,8 @@ CAPTION_FONT = ('verdana', 10, 'normal')
 LIST_FONT = ('verdana', 10, 'normal')
 LABEL_FONT = ('verdana', 10, 'normal')
 FIXED_FONT = ('courier new', 10, 'normal')
+REG_IN_FONT = ('courier new', 10, 'normal')
+REG_OUT_FONT = ('courier new', 10, 'overstrike')
 
 # Defines
 LIST_WIDTH = 65         # Width of register list in characters (not pixels)
@@ -76,14 +79,14 @@ class RegisterList(ttk.Frame):
         
         self.yScroll = ttk.Scrollbar(self, orient=tk.VERTICAL)
         self.yScroll.grid(row=1, column=1, sticky=tk.N+tk.S)
-        self.listbox = tk.Listbox(self, yscrollcommand=self.yScroll.set,
+        self.listbox = tk.Text(self, yscrollcommand=self.yScroll.set,
                                              width=LIST_WIDTH, height=25,
-                                             selectmode=tk.SINGLE,
                                              font=FIXED_FONT)
         self.listbox.grid(row=1, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
         self.yScroll['command'] = self.listbox.yview
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
+        self.indojo = {}    # Initialise dictionary for members logged-in
         
 class LoginArea(ttk.Frame):
     """ Login fields and botton (on left) """
@@ -186,18 +189,26 @@ class Register(ttk.Frame):
     def LoadRegister(self):
         ''' Delete all entries in register list and re-load '''
         # Load the current register entries for today (may be empty)
-        self.registerlist.listbox.delete(0, tk.END)
+        self.registerlist.listbox.delete("0.0", tk.END)
         registerlist = mysqldb.GetRegisterList(self.dojoid)
         self.incount = 0
         self.outcount = 0
         for reg in registerlist:
             line = self.GetListEntry(reg['Login'], reg['Logout'], reg['NickName'], reg['FirstName'], reg['LastName'])
+            self.registerlist.indojo[reg['UserID']] = tk.IntVar()
             if( not reg['Logout'] == None and reg['Logout'] > reg['Login'] ):
+                rin = False
                 self.outcount += 1
             else:
                 self.incount += 1
-                
-            self.registerlist.listbox.insert(0, line)
+                rin = True
+
+            if( rin ):
+                cb = tk.Checkbutton(self, text=line, font=REG_IN_FONT, variable=self.registerlist.indojo[reg['UserID']])
+            else:
+                cb = tk.Checkbutton(self, text=line, font=REG_IN_FONT, state=tk.DISABLED)
+            self.registerlist.listbox.window_create("end", window=cb)
+            self.registerlist.listbox.insert("end", "\n") # to force one checkbox per line    
 
         if( self.incount > 0 or self.outcount > 0 ):
             self.UpdateStatus()
@@ -208,8 +219,8 @@ class Register(ttk.Frame):
         if( not logout == None and logout > login ):
             out = str.format('{0:%H:%M}', logout)
         else:
-            out = ""
-        line = str.format(' {0:%H:%M}  {1:16} {2:32} {3}', login, nickname, name, out)
+            out = "     "
+        line = str.format(' {0:%H:%M}  {1:14} {2:32} {3} ', login, nickname, name, out)
 
         return line
             
@@ -244,7 +255,7 @@ class Register(ttk.Frame):
         # If so then ask if we want to logout
         register = mysqldb.GetRegister(self.dojoid, self.user['UserID'])
         if( not register == None and register['Logout'] == None ):
-            if(tk.messagebox.askyesno("Logout?", "You're logged In. Do you want to logout now?")):
+            if(tk.messagebox.askyesno("Logout?", "You're logged-in. Do you want to logout now?")):
                 self.Logout()
             return
         
@@ -260,15 +271,34 @@ class Register(ttk.Frame):
 
         # add to register, the list and increase login count
         mysqldb.Login(self.user['UserID'])
-        line = self.GetListEntry(datetime.datetime.now(), None, name, self.user['FirstName'], self.user['LastName'])
-        self.registerlist.listbox.insert(0, line)
-        self.incount += 1
-        self.UpdateStatus()
+
+        self.LoadRegister()     # Update the Register List
+        
         tk.messagebox.showinfo("Welcome Back!", "You are now logged in")
         self.ClearDetails()
 
             
     def Logout(self, parent=None):
+        # We have a dictionary of the member (nicknames) and a flag for the check-box
+        # If we have any 'ticks' we will assume we are performing a 'mentor logout' of one or more members
+        # Mentor has to provide their username/password then all 'ticked' users will be logged out
+        locount = 0
+        for member, flag in self.registerlist.indojo.items():
+            if(flag.get()):
+                locount += 1
+
+        if( locount ):
+            if(tk.messagebox.askyesno("Mentor Logout", "You have select " + str(locount) + " users to logout.\n\nYou need to be a mentor to do this.\n\nProceed?")):
+                doit = MentorPasswordDialog(root, "Mentor Multi-Logout", None).result 
+                if( doit == 1 ):
+                    # OK - log them all out
+                    for member, flag in self.registerlist.indojo.items():
+                        if(flag.get()):
+                            mysqldb.Logout(member)
+                    self.LoadRegister()
+                    return       
+            return
+
         name = self.login.nickname_entry.get()
         password = self.login.password_entry.get()
         if( name == "" or password == "" ):
