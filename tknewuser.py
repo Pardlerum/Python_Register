@@ -199,7 +199,8 @@ You will also need to remember your password (min 8 characters) - that's two thi
                 tk.messagebox.showerror("Oh No! Error", "Whoops! Looks like you broke it...\n\nSomething went wrong\n(" + str(code) +" : " + msg + ")")
                 return 0
             else:
-                tk.messagebox.showinfo("Great!", "You're in!\n\nNow log in (and remember to log out when you leave).")
+                tk.messagebox.showinfo("Great!", "You're in!\n\nNow remember to log out when you leave.")
+                return (user["NickName"], self.n1password_entry.get())
 
 
 
