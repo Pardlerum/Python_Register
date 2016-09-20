@@ -67,6 +67,25 @@ def GetDojo():
 
     return row
 
+def AddDojoNotes(title, notes):
+    ''' Add a title and notes to the current Dojo record
+    '''
+    # Get currnt Dojo
+    dojo = GetDojo()
+
+    con = DBConnection()
+    
+    try:
+      with con.cursor() as cur:
+            sql = '''UPDATE Dojo SET Title = %s, Notes = %s WHERE DojoId = %s'''
+
+            cur.execute(sql, (title, notes, dojo['DojoId']))
+            con.commit()
+
+    except Exception as e:
+        print("Error : ", e)
+    finally:
+        pass
 
 def LoadUser(lookfor, column='UserID'):
     '''Get an existing user record, pass in the thing to look for in 'lookfor' ,

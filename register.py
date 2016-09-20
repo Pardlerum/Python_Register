@@ -15,6 +15,7 @@ from tkchangepassword import ChangePasswordDialog
 from tkphone import ChangePhoneDialog
 from tknewuser import AddUserDialog
 from tkmentorpassword import MentorPasswordDialog
+from tkaddnotes import AddNotesDialog
 
 import mysqldb
 import mypassword as pw  # for password hashing and checking functions
@@ -266,9 +267,10 @@ class Register(ttk.Frame):
         
     def Shutdown(self, parent=None):
         if( tk.messagebox.askyesno("Going to shutdown now...", "Really?\n\nAre we really done?\n\nYou sure?")):
-            # Close our DB Connection
-            mysqldb.DBConnection(True)
-            self.parent.quit()
+            if( AddNotesDialog(root, title="Update the Dojo Notes...").result == 1 ):
+                # Close our DB Connection
+                mysqldb.DBConnection(True)
+                self.parent.quit()
 
     def ChangeUserPassword(self):
         tkchpw = ChangePasswordDialog(root, title="Change Password", user=self.user)
