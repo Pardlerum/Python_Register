@@ -28,9 +28,11 @@ TITLE_FONT = ('verdana', 16, 'normal')
 CAPTION_FONT = ('verdana', 10, 'normal')
 LIST_FONT = ('verdana', 10, 'normal')
 LABEL_FONT = ('verdana', 10, 'normal')
+TEXT_FONT = ('verdana', 9, 'normal')
 FIXED_FONT = ('courier new', 10, 'normal')
 REG_IN_FONT = ('courier new', 10, 'normal')
 REG_OUT_FONT = ('courier new', 10, 'overstrike')
+TEXT_COLOUR = 'LightSteelBlue4'
 
 # Defines
 LIST_WIDTH = 65         # Width of register list in characters (not pixels)
@@ -94,8 +96,18 @@ class LoginArea(ttk.Frame):
         ttk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
 
+        self.Text1=tk.Text(self, height=5, width=20, relief=tk.FLAT, wrap=tk.WORD)
+        self.Text1.insert("1.0", """If you already have a Nickname and Password, enter them below and press the 'Login' button. 
+
+To Logout (when you leave) enter the same details again but press the 'Logout' button.""")
+        self.Text1.config(state=tk.DISABLED, font=TEXT_FONT, bg=defaultbg, fg=TEXT_COLOUR)
+        self.Text1.grid(row=0, column=0, columnspan=2, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
+        self.rowconfigure(0, weight=0)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        
         self.lframe = tk.LabelFrame(self)
-        self.lframe.grid(row=0, column=0, padx=4, pady=8, ipadx=4, ipady=4, columnspan=2, sticky=tk.E)
+        self.lframe.grid(row=1, column=0, padx=8, pady=4, ipadx=4, ipady=4, columnspan=2, sticky=tk.E+tk.W)
         
         self.nickname_label=ttk.Label(self.lframe, relief=tk.FLAT, anchor=tk.E, text='Nickname', style='Label.TLabel')
         self.nickname_label.grid(row=0, column=0, padx=4, pady=8, ipadx=2, ipady=2, sticky=tk.E)
@@ -121,20 +133,38 @@ class LoginArea(ttk.Frame):
                                                  text='Logout', width=button_width, style="LButton.TButton")
         self.logout.grid(row=2, column=1, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E)
         
+
+        self.Text2=tk.Text(self, height=8, width=28, relief=tk.FLAT, wrap=tk.WORD)
+        self.Text2.insert("1.0", """If you DON'T already have a Nickname and Password, press 'Add New User' to create a new account. 
+
+Next time you login or logout you will use the boxes above.""")
+        self.Text2.config(state=tk.DISABLED, font=TEXT_FONT, bg=defaultbg, fg=TEXT_COLOUR)
+        self.Text2.grid(row=3, column=0, columnspan=1, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
+        self.rowconfigure(3, weight=0)
+
         self.newuser_img = tk.PhotoImage(file='images\\plus.gif')
         self.newuser = ttk.Button(self, compound=tk.LEFT, image=self.newuser_img,
                                                     text='Add New User', width=button_width, style="LButton.TButton")
-        self.newuser.grid(row=3, column=1, padx=4, pady=16, ipadx=2, ipady=2, sticky=tk.E)
+        self.newuser.grid(row=3, column=1, padx=4, pady=16, ipadx=2, ipady=2, sticky=tk.W)
         
+
+        self.Text3=tk.Text(self, height=8, width=28, relief=tk.FLAT, wrap=tk.WORD)
+        self.Text3.insert("1.0", """If you want to change your password, or can't remember what it is and want to reset it use 'Change Password'.
+
+You will need a Mentor's help if you cannot remember your password.""")
+        self.Text3.config(state=tk.DISABLED, font=TEXT_FONT, bg=defaultbg, fg=TEXT_COLOUR)
+        self.Text3.grid(row=4, column=1, columnspan=1, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
+        self.rowconfigure(4, weight=0)
+
         self.changepw_img = tk.PhotoImage(file='images\\book.gif')
         self.changepw = ttk.Button(self, compound=tk.LEFT, image=self.changepw_img,
                                                     text='Change Password', width=button_width, style="LButton.TButton")
-        self.changepw.grid(row=4, column=1, padx=4, pady=16, ipadx=2, ipady=2, sticky=tk.E)
+        self.changepw.grid(row=4, column=0, padx=4, pady=16, ipadx=2, ipady=2, sticky=tk.E)
         
         self.exit_img = tk.PhotoImage(file='images\\times.gif')
         self.exit_ = ttk.Button(self, compound=tk.LEFT, image=self.exit_img,
                                                     text='Shutdown', width=button_width, style="LButton.TButton")
-        self.exit_.grid(row=5, padx=4, pady=64, ipadx=2, ipady=2, sticky=tk.W+tk.S)
+        self.exit_.grid(row=5, padx=4, pady=8, ipadx=2, ipady=2, sticky=tk.W+tk.S)
         self.rowconfigure(5, weight=1)
 
 
@@ -150,7 +180,7 @@ class Register(ttk.Frame):
         self.titlebar.grid(sticky=tk.N+tk.E+tk.W, columnspan=2)
         
         self.login = LoginArea(self)
-        self.login.grid(row=1, stick=tk.N, pady=25)
+        self.login.grid(row=1, stick=tk.N+tk.S, pady=4)
         
         self.registerlist = RegisterList(self)
         self.registerlist.grid(row=1, column=1, sticky=tk.N+tk.S+tk.E+tk.W)
@@ -267,7 +297,7 @@ class Register(ttk.Frame):
         # If so then ask if we want to logout
         register = mysqldb.GetRegister(self.dojoid, self.user['UserID'])
         if( not register == None and register['Logout'] == None ):
-            if(tk.messagebox.askyesno("Logout?", "You're logged-in. Do you want to logout now?")):
+            if(tk.messagebox.askyesno("Logout?", "You're already logged-in. Do you want to logout now?")):
                 self.Logout()
             return
         
@@ -299,7 +329,7 @@ class Register(ttk.Frame):
             if(flag.get()):
                 locount += 1
 
-        if( locount ):
+        if( locount >= 1 ):
             if(tk.messagebox.askyesno("Mentor Logout", "You have select " + str(locount) + " users to logout.\n\nYou need to be a mentor to do this.\n\nProceed?")):
                 doit = MentorPasswordDialog(root, "Mentor Multi-Logout", None).result 
                 if( doit == 1 ):
@@ -344,7 +374,8 @@ class Register(ttk.Frame):
             
     def NewUser(self):
         if( tk.messagebox.askyesno("Adding new user...", "Hey welcome!\n\nDid you really want to create a new user?")):
-            result = AddUserDialog(root, "Welcome Padawan")
+            result = AddUserDialog(root, "Welcome Padawan").result
+            # If we have the new details then we will log them in immediately
             if( result[0] != None and result[1] != None ):
                 self.Login(nname=result[0], npassword=result[1])
 
@@ -356,12 +387,13 @@ class Register(ttk.Frame):
 # Our main program loop - sets window title and size then executes mainloop()
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry("990x720")
+    root.geometry("1024x720")
     root.title("Dojo Register")
     root.wm_iconbitmap(bitmap="images\\book.ico")
     root.columnconfigure(0, weight=1)     # We want to resize and use all window width
     root.rowconfigure(0, weight=1)        # We want to resize and use all window height
-    
+    defaultbg = root.cget('bg')
+
     # ttk Styles
     s = ttk.Style()
     s.configure('Title.TLabel', font=TITLE_FONT,  background=DK_BLUE, foreground='white')   
