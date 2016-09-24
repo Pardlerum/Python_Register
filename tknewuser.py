@@ -27,7 +27,8 @@ Please choose your Nickname carefully - it will stay with you forever and will a
 You will use your Nickname to log in each time you come back to Dojo - so choose something you will definitely remember!
 
 You will also need to remember your password (min 8 characters) - that's two things to remember - are you up for that challenge???""")
-        self.Text1.config(state=tk.DISABLED)
+    
+        self.Text1.config(state=tk.DISABLED, font=tkdialog.Dialog.TEXT_FONT, bg=tkdialog.Dialog.bg, fg=tkdialog.Dialog.TEXT_COLOUR)
         self.Text1.grid(row=row, column=0, columnspan=2, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
         row += 1
 
@@ -58,7 +59,7 @@ You will also need to remember your password (min 8 characters) - that's two thi
         self.Text2=tk.Text(master, relief=tk.FLAT, width=width, height=1, wrap=tk.WORD)
         self.Text2.insert("1.0", """The contact number provided must be for a parent or guardian over 18.""")
         self.Text2.grid(row=row, column=0, columnspan=2, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
-        self.Text2.config(state=tk.DISABLED)
+        self.Text2.config(state=tk.DISABLED, font=tkdialog.Dialog.TEXT_FONT, bg=tkdialog.Dialog.bg, fg=tkdialog.Dialog.TEXT_COLOUR)
         row += 1
 
         self.contact_label=ttk.Label(master, relief=tk.FLAT, anchor=tk.E, text='Contact Number:', style='Label.TLabel')
@@ -82,7 +83,7 @@ You will also need to remember your password (min 8 characters) - that's two thi
         self.Text3=tk.Text(master, relief=tk.FLAT, width=width, height=1, wrap=tk.WORD)
         self.Text3.insert("1.0", """When you're all done... press 'OK' to create your Dojo account.""")
         self.Text3.grid(row=row, column=0, columnspan=2, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
-        self.Text3.config(state=tk.DISABLED)
+        self.Text3.config(state=tk.DISABLED, font=tkdialog.Dialog.TEXT_FONT, bg=tkdialog.Dialog.bg, fg=tkdialog.Dialog.TEXT_COLOUR)
 
         return self.user_entry
 

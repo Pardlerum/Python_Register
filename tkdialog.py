@@ -2,12 +2,19 @@ import tkinter as tk
 from tkinter import ttk
 import os
 
+
+
 class Dialog(tk.Toplevel):
 
-    def __init__(self, parent, title = None):
+    TEXT_FONT = ('verdana', 9, 'normal')
+    TEXT_COLOUR = 'LightSteelBlue4'
+    
 
+    def __init__(self, parent, title = None):
         tk.Toplevel.__init__(self, parent)
         self.transient(parent)
+
+        Dialog.bg = parent.cget('bg')
 
         if title:
             self.title(title)

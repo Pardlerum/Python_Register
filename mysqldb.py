@@ -137,7 +137,7 @@ def GetContactNumber(userid):
 def UpdateContactNumber(userid, contactnumber):
     ''' Update the existing contact number with the new one provided '''
     user = LoadUser(userid)
-    if( user['ContactNumber'] == contactnumber or contact == "" ):
+    if( user['ContactNumber'] == contactnumber or contactnumber == "" ):
         return
 
     # Need to update as different

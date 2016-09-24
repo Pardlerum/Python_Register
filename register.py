@@ -36,7 +36,8 @@ REG_OUT_FONT = ('courier new', 10, 'overstrike')
 TEXT_COLOUR = 'LightSteelBlue4'
 
 # Defines
-LIST_WIDTH = 65         # Width of register list in characters (not pixels)
+LIST_WIDTH = 65                     # Width of register list in characters (not pixels)
+VERSION = "(V2.2 24-Sep-16)"         # Version number
 
 class StatusBar(ttk.Frame):
     """ Status bar with text (left) and embedded clock (right) """
@@ -245,8 +246,10 @@ class Register(ttk.Frame):
                 cb = tk.Checkbutton(self, text=line, font=REG_IN_FONT, state=tk.DISABLED)
             # If we not doing the first entry then insert a new-line first
             if( not ((self.incount == 1 and self.outcount == 0) or (self.incount == 0 and self.outcount == 1))):
-                self.registerlist.listbox.insert("end", "\n")
-            self.registerlist.listbox.window_create("end", window=cb)
+                self.registerlist.listbox.insert("1.end", "\n")
+            self.registerlist.listbox.window_create("1.0", window=cb)
+            self.registerlist.listbox.bind("<BackSpace>", lambda x : "break")   # Disable backspace
+            self.registerlist.listbox.bind("<Delete>", lambda x : "break")      # Disable delete
 
         if( self.incount > 0 or self.outcount > 0 ):
             self.UpdateStatus()
@@ -378,7 +381,7 @@ class Register(ttk.Frame):
         if( tk.messagebox.askyesno("Adding new user...", "Hey welcome!\n\nDid you really want to create a new user?")):
             result = AddUserDialog(root, "Welcome Padawan").result
             # If we have the new details then we will log them in immediately
-            if( result[0] != None and result[1] != None ):
+            if( result != None and result[0] != None and result[1] != None ):
                 self.Login(nname=result[0], npassword=result[1])
 
     def ClearDetails(self, parent=None):
@@ -390,7 +393,7 @@ class Register(ttk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry("1024x720")
-    root.title("Dojo Register")
+    root.title("Dojo Register " + VERSION)
     root.wm_iconbitmap(bitmap="images\\book.ico")
     root.columnconfigure(0, weight=1)     # We want to resize and use all window width
     root.rowconfigure(0, weight=1)        # We want to resize and use all window height
