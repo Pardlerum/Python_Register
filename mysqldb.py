@@ -7,6 +7,11 @@ import mypassword as pw  # for password hashing and checking functions
 
 connection = None        # Our database connection
 
+# Get our current install/running location - SSL certificates are in the sub-folder .\SSL
+# (Assumes we're running on Windows)
+dir_path = os.path.dirname(os.path.realpath(__file__))
+ssl_path = dir_path + '\\ssl\\'
+
 
 def CloseDB():
     DBConnection(True)
@@ -21,6 +26,7 @@ def DBConnection(close=False):
         print("You need to set the Environment variable: RegisterPassword")
         return None
 
+    
     global connection
     if(close and connection != None):
         connection.close()
@@ -32,7 +38,8 @@ def DBConnection(close=False):
                                          password=password,
                                          db='register',
                                          charset='utf8mb4',
-                                         cursorclass=pymysql.cursors.DictCursor)
+                                         cursorclass=pymysql.cursors.DictCursor,
+                                         ssl={'key': ssl_path+'client-key.pem', 'cert': ssl_path+'client-cert.pem'})
 
     return connection
 
