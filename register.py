@@ -38,6 +38,7 @@ TEXT_COLOUR = 'LightSteelBlue4'
 # Defines
 LIST_WIDTH = 65                     # Width of register list in characters (not pixels)
 VERSION = "(V2.3 21-May-17)"        # Version number
+# Change to test Git on VSCode
 
 class StatusBar(ttk.Frame):
     """ Status bar with text (left) and embedded clock (right) """
