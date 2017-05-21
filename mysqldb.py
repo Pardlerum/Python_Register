@@ -228,7 +228,27 @@ def GetUser(nickname):
 
     try:
         with con.cursor() as cur:
-            sql = '''SELECT UserID, NickName, Password, FirstName, LastName FROM User WHERE NickName = %s'''
+            sql = '''
+            SELECT
+                UserID,
+                NickName,
+                Password,
+                FirstName,
+                LastName,
+                (SELECT
+                    Register.Login
+                FROM
+                    Register
+                WHERE
+                    Register.UserID = User.UserID
+                ORDER BY
+                    Register.Login DESC
+                LIMIT 1)
+                AS LastSeen
+            FROM
+                User
+            WHERE 
+                NickName = %s'''
 
             cur.execute(sql, nickname)
             row = cur.fetchone()

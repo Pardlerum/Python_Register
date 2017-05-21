@@ -37,7 +37,7 @@ TEXT_COLOUR = 'LightSteelBlue4'
 
 # Defines
 LIST_WIDTH = 65                     # Width of register list in characters (not pixels)
-VERSION = "(V2.2 24-Sep-16)"         # Version number
+VERSION = "(V2.3 21-May-17)"        # Version number
 
 class StatusBar(ttk.Frame):
     """ Status bar with text (left) and embedded clock (right) """
@@ -321,7 +321,10 @@ class Register(ttk.Frame):
 
         self.LoadRegister()     # Update the Register List
         
-        tk.messagebox.showinfo("Welcome Back!", "You are now logged in")
+        tk.messagebox.showinfo("Welcome Back " + self.user['FirstName'] + "!", 
+            "Hi " + self.user['FirstName'] + 
+            ", you are now logged in.\n\nYou last logged in at: " + self.user['LastSeen'].strftime('%H:%M on %a %d-%b-%y') + 
+            "\n\nWelcome back!")
         self.ClearDetails()
 
             
