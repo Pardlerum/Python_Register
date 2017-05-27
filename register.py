@@ -278,6 +278,27 @@ class Register(ttk.Frame):
     def ChangeUserPassword(self):
         tkchpw = ChangePasswordDialog(root, title="Change Password", user=self.user)
 
+    def WelcomeFred(self):
+        messages = ["Hey Fred - welcome back to Dojo",
+                    "How's it going?",
+                    "Isn't it great when you get a *personal* welcome?",
+                    "I bet this really improves the end-user experience.",
+                    "Nearly done now...",
+                    "Just one more to go...",
+                    "Before the next one comes up...",
+                    "and then you'll be done. Logged in.",
+                    "Finally.",
+                    "You made it.",
+                    "Well done.",
+                    "Is it time to leave yet?",
+                    "See you again real soon!",
+                    "Oh - one more thing...",
+                    "Nevermind - I 'll ask you next time..."
+                    ]
+        for msg in messages:
+            tk.messagebox.showinfo("Welcome Back Fred!", msg)
+
+            
     def Login(self, parent=None, nname=None, npassword=None):
         if( nname == None and npassword == None ):
             name = self.login.nickname_entry.get()
@@ -325,6 +346,11 @@ class Register(ttk.Frame):
             "Hi " + self.user['FirstName'] + 
             ", you are now logged in.\n\nYou last logged in at: " + self.user['LastSeen'].strftime('%H:%M on %a %d-%b-%y') + 
             "\n\nWelcome back!")
+        
+        # Give Fred a special welcome 'fredjellis' = 14
+        if self.user['UserID'] == 14:
+            self.WelcomeFred()
+
         self.ClearDetails()
 
             
