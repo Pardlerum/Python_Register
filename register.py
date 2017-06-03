@@ -347,8 +347,8 @@ class Register(ttk.Frame):
             ", you are now logged in.\n\nYou last logged in at: " + self.user['LastSeen'].strftime('%H:%M on %a %d-%b-%y') + 
             "\n\nWelcome back!")
         
-        # Give Fred a special welcome 'fredjellis' = 14
-        if self.user['UserID'] == 14:
+        # Give Fred a special welcome 'fredjellis' = 17
+        if self.user['UserID'] == 17:
             self.WelcomeFred()
 
         self.ClearDetails()
