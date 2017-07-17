@@ -37,7 +37,7 @@ TEXT_COLOUR = 'LightSteelBlue4'
 
 # Defines
 LIST_WIDTH = 65                     # Width of register list in characters (not pixels)
-VERSION = "(V2.3 21-May-17)"        # Version number
+VERSION = "(V2.4 17-Jul-17)"        # Version number
 
 class StatusBar(ttk.Frame):
     """ Status bar with text (left) and embedded clock (right) """
@@ -348,8 +348,8 @@ class Register(ttk.Frame):
             "\n\nWelcome back!")
         
         # Give Fred a special welcome 'fredjellis' = 17
-        if self.user['UserID'] == 17:
-            self.WelcomeFred()
+        #if self.user['UserID'] == 17:
+        #    self.WelcomeFred()
 
         self.ClearDetails()
 
