@@ -37,7 +37,7 @@ TEXT_COLOUR = 'LightSteelBlue4'
 
 # Defines
 LIST_WIDTH = 65                     # Width of register list in characters (not pixels)
-VERSION = "(V2.4 17-Jul-17)"        # Version number
+VERSION = "(V2.5 17-Mar-18)"        # Version number
 
 class StatusBar(ttk.Frame):
     """ Status bar with text (left) and embedded clock (right) """
@@ -315,9 +315,15 @@ class Register(ttk.Frame):
         if(  self.user == None ):
             tk.messagebox.showerror("Ponderous Error", "We don't have a record of that Nickname...\n\nDo you need to register as a New User?")
             return
-        if( not pw.CheckPassword(self.user['Password'], password) ):
-            tk.messagebox.showerror("Memslip Error", "Nope. That's not the password used with this Nickname.\n\nTry again hacker...")
-            return
+        # First check the new password - if not found then check the old one
+        # If the old one is found and it matches then generate a new hash for next time     
+        if( not pw.CheckPassword(self.user['Hash'], password) ):
+            # We don't have the new style password - so check old
+            if( not pw.CheckOldPassword(self.user['Password'], password)):
+                tk.messagebox.showerror("Memslip Error", "Nope. That's not the password used with this Nickname.\n\nTry again hacker...")
+                return
+            # Old style password OK - so create new hash for next time
+            mysqldb.SetPassword(self.user['UserID'], password)
 
         # OK - we have a valid login attempt - but are we already logged in?
         # If so then ask if we want to logout
@@ -386,9 +392,11 @@ class Register(ttk.Frame):
         if(  self.user == None ):
             tk.messagebox.showerror("Ponderous Error", "We don't have a record of that Nickname...\n\nLook in the list for your Nickname...")
             return
-        if( not pw.CheckPassword(self.user['Password'], password) ):
-            tk.messagebox.showerror("Memslip Error", "Nope. That's not the password used with this Nickname.\n\nTry again hacker...")
-            return
+        if( not pw.CheckPassword(self.user['Hash'], password) ):
+            if( not pw.CheckOldPassword(self.user['Password'], password)):
+                tk.messagebox.showerror("Memslip Error", "Nope. That's not the password used with this Nickname.\n\nTry again hacker...")
+                return
+
         # OK - we have a valid login attempt - but are we already logged out?
         register = mysqldb.GetRegister(self.dojoid, self.user['UserID'])
         if( register == None or not register['Logout'] == None ):

@@ -169,7 +169,7 @@ def AddNewUser(user):
     '''Add a new user record
     the 'user' argument is a dictionary of columns/values to create the record
     Will fail of the NickName is not unique.
-    UserID is automaticaly allocated on creation
+    UserID is automatically allocated on creation
 
     Passwords provided are converted to hash (if provided) or None if not
 
@@ -244,7 +244,8 @@ def GetUser(nickname):
                 ORDER BY
                     Register.Login DESC
                 LIMIT 1)
-                AS LastSeen
+                AS LastSeen,
+                Hash
             FROM
                 User
             WHERE 
@@ -280,7 +281,7 @@ def GetMentor(nickname, password):
     
 def SetPassword(userid, password):
     ''' Set a user's password - identified by UserID
-       Convert's password (string) into a 128 character hash '''
+       Converts password (string) into a bcrypt hash '''
     passwordhash = pw.GetPasswordHash(password)
     now_timestamp = datetime.datetime.now().isoformat()
 
@@ -288,7 +289,7 @@ def SetPassword(userid, password):
 
     try:
         with con.cursor() as cur:
-            sql = '''UPDATE User SET Password = %s, LastUpdate = %s WHERE UserID = %s'''
+            sql = '''UPDATE User SET Hash = %s, LastUpdate = %s WHERE UserID = %s'''
 
             cur.execute(sql, (passwordhash, now_timestamp, userid))
             con.commit()
@@ -419,8 +420,7 @@ if __name__ == "__main__":
     rows = GetRegisterList(row['DojoId'])
     print('Register: ', rows)    
     
-    
-    id = GetUserID('Grazey')
+    id = GetUserID('gmac')
  
     ret, err = Login(id)
 
