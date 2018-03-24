@@ -15,6 +15,7 @@ def GetPasswordHash(password, salt_ = None):
         if no salt_ is provided a new one is created.
         bcrypt encodes the salt into the first part of the hash so passing in the hash provides the salt
         that was used to generate the hash originally '''
+    if( salt_ is not None ): salt_ = salt_.encode("utf-8")
     if( salt_ == None ): salt_ = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode("utf-8"), salt_)
 
@@ -24,7 +25,7 @@ def GetOldPasswordHash(password):
 def CheckPassword(hash_, password):
     ''' Check that the hash provided matches the hash generated from the
         password string provided - Returns True if they match '''
-    myhash = GetPasswordHash(password, hash_.encode("utf-8"))
+    myhash = GetPasswordHash(password, hash_)
     return (myhash == hash_) 
 
 def CheckOldPassword(hash_, password):
