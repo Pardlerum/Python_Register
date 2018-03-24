@@ -17,7 +17,7 @@ def GetPasswordHash(password, salt_ = None):
         that was used to generate the hash originally '''
     if( salt_ is not None ): salt_ = salt_.encode("utf-8")
     if( salt_ == None ): salt_ = bcrypt.gensalt()
-    return bcrypt.hashpw(password.encode("utf-8"), salt_)
+    return bcrypt.hashpw(password.encode("utf-8"), salt_).decode("utf-8")
 
 def GetOldPasswordHash(password):
     return hashlib.sha512(password.encode('utf-8') + oursalt).hexdigest()

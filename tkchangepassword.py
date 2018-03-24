@@ -72,7 +72,7 @@ class ChangePasswordDialog(tkdialog.Dialog):
         if( mentorreset ):
             mentor = db.GetMentor(self.mentor_entry.get(), self.mpassword_entry.get())
             if( mentor == None ):
-                tk.messagebox.showerror("Mentor Error", "Mentor details aren't right mate...\n\nIf you are trying to rest a password you\nneed a valid Mentor Nickname and Password")
+                tk.messagebox.showerror("Mentor Error", "Mentor details aren't right mate...\n\nIf you are trying to reset a password you\nneed a valid Mentor Nickname and Password")
                 mentorreset = False
 
         nickname = self.user_entry.get()

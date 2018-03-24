@@ -37,7 +37,7 @@ TEXT_COLOUR = 'LightSteelBlue4'
 
 # Defines
 LIST_WIDTH = 65                     # Width of register list in characters (not pixels)
-VERSION = "(V2.5 17-Mar-18)"        # Version number
+VERSION = "(V2.6 24-Mar-18)"        # Version number
 
 class StatusBar(ttk.Frame):
     """ Status bar with text (left) and embedded clock (right) """

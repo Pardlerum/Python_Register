@@ -202,7 +202,7 @@ def AddNewUser(user):
     try:
         with con.cursor() as cur:
             sql = '''
-                    INSERT INTO User (NickName, FirstName, LastName, DOB, ContactNumber, Password, 
+                    INSERT INTO User (NickName, FirstName, LastName, DOB, ContactNumber, Hash, 
                     CreatedDate, UserType, LastUpdate) 
                     VALUES (%(NickName)s, %(FirstName)s, %(LastName)s, %(DOB)s, %(ContactNumber)s, 
                     %(Password)s, %(CreatedDate)s, %(UserType)s, %(LastUpdate)s)
