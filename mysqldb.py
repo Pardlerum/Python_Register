@@ -105,7 +105,7 @@ def LoadUser(lookfor, column='UserID'):
         with con.cursor() as cur:
             sql = '''SELECT UserID, FirstName, LastName, NickName, 
                       Password, CreatedDate, DOB, UserType, LastUpdate,
-                      ContactNumber FROM User WHERE '''
+                      ContactNumber, Hash FROM User WHERE '''
 
             if(column == 'UserID'):
                 sql += 'UserID = %s'
@@ -271,7 +271,7 @@ def GetMentor(nickname, password):
     if( mentor == None ):
         return None
 
-    if(not pw.CheckPassword(mentor["Password"], password)):
+    if(not pw.CheckPassword(mentor["Hash"], password)):
         return None
 
     if( mentor["UserType"] != "Mentor"):
