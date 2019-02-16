@@ -2,6 +2,8 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import os
+from pathlib import Path            # Gives OS independent path manipulation - coz I'm running on Linux
 
 import time
 import random
@@ -37,7 +39,19 @@ TEXT_COLOUR = 'LightSteelBlue4'
 
 # Defines
 LIST_WIDTH = 65                     # Width of register list in characters (not pixels)
-VERSION = "(V2.6 24-Mar-18)"        # Version number
+VERSION = "(V2.7 9-Feb-19)"         # Version number
+
+# Set up our image/icon paths
+# This is OS independant so should work on Windows and Linux without change
+IMAGE_FOLDER = Path(os.path.dirname(os.path.realpath(__file__))) / "images"
+
+IMG_SIGN_IN = IMAGE_FOLDER / "sign-in.gif"
+IMG_SIGN_OUT = IMAGE_FOLDER / "sign-out.gif"
+IMG_PLUS = IMAGE_FOLDER / "plus.gif"
+IMG_TIMES = IMAGE_FOLDER / "times.gif"
+IMG_BOOK = IMAGE_FOLDER / "book.gif"
+IMG_BOOK_ICO = IMAGE_FOLDER / "book.ico"
+
 
 class StatusBar(ttk.Frame):
     """ Status bar with text (left) and embedded clock (right) """
@@ -125,12 +139,12 @@ To Logout (when you leave) enter the same details again but press the 'Logout' b
         self.lframe.grid_columnconfigure(1, weight=1)
 
         button_width = 16
-        self.login_img = tk.PhotoImage(file='images\\sign-in.gif')
+        self.login_img = tk.PhotoImage(file=IMG_SIGN_IN)
         self.login = ttk.Button(self.lframe, compound=tk.LEFT, image=self.login_img, default=tk.ACTIVE,
                                                text='Login', width=button_width, style="LButton.TButton")
         self.login.grid(row=2, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.W)
 
-        self.logout_img = tk.PhotoImage(file='images\\sign-out.gif')
+        self.logout_img = tk.PhotoImage(file=IMG_SIGN_OUT)
         self.logout = ttk.Button(self.lframe, compound=tk.LEFT, image=self.logout_img,
                                                  text='Logout', width=button_width, style="LButton.TButton")
         self.logout.grid(row=2, column=1, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E)
@@ -144,7 +158,7 @@ Next time you login or logout you will use the boxes above.""")
         self.Text2.grid(row=3, column=0, columnspan=1, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
         self.rowconfigure(3, weight=0)
 
-        self.newuser_img = tk.PhotoImage(file='images\\plus.gif')
+        self.newuser_img = tk.PhotoImage(file=IMG_PLUS)
         self.newuser = ttk.Button(self, compound=tk.LEFT, image=self.newuser_img,
                                                     text='Add New User', width=button_width, style="LButton.TButton")
         self.newuser.grid(row=3, column=1, padx=4, pady=16, ipadx=2, ipady=2, sticky=tk.W)
@@ -158,12 +172,12 @@ You will need a Mentor's help if you cannot remember your password.""")
         self.Text3.grid(row=4, column=1, columnspan=1, padx=4, pady=4, ipadx=2, ipady=2, sticky=tk.E+tk.W)
         self.rowconfigure(4, weight=0)
 
-        self.changepw_img = tk.PhotoImage(file='images\\book.gif')
+        self.changepw_img = tk.PhotoImage(file=IMG_BOOK)
         self.changepw = ttk.Button(self, compound=tk.LEFT, image=self.changepw_img,
                                                     text='Change Password', width=button_width, style="LButton.TButton")
         self.changepw.grid(row=4, column=0, padx=4, pady=16, ipadx=2, ipady=2, sticky=tk.E)
         
-        self.exit_img = tk.PhotoImage(file='images\\times.gif')
+        self.exit_img = tk.PhotoImage(file=IMG_TIMES)
         self.exit_ = ttk.Button(self, compound=tk.LEFT, image=self.exit_img,
                                                     text='Shutdown', width=button_width, style="LButton.TButton")
         self.exit_.grid(row=5, padx=4, pady=8, ipadx=2, ipady=2, sticky=tk.W+tk.S)
@@ -231,7 +245,7 @@ class Register(ttk.Frame):
         self.incount = 0
         self.outcount = 0
         for reg in registerlist:
-            line = self.GetListEntry(reg['Login'], reg['Logout'], reg['NickName'], reg['FirstName'], reg['LastName'])
+            line = self.GetListEntry(reg['Login'], reg['Logout'], reg['NickName'], reg['FirstName'], reg['LastName'], reg['UserType'] == "Mentor")
             self.registerlist.indojo[reg['UserID']] = tk.IntVar()
             if( not reg['Logout'] == None and reg['Logout'] > reg['Login'] ):
                 rin = False
@@ -254,14 +268,17 @@ class Register(ttk.Frame):
         if( self.incount > 0 or self.outcount > 0 ):
             self.UpdateStatus()
         
-    def GetListEntry(self, login, logout, nickname, firstname, lastname):
+    def GetListEntry(self, login, logout, nickname, firstname, lastname, mentor):
         ''' Format the data for an entry in the list '''
-        name = str.format("({0} {1})", firstname, lastname)
+        if(mentor):
+            name = "(M) " + str.format("{0} {1}", firstname, lastname)
+        else:
+            name = str.format("{0} {1}", firstname, lastname)
         if( not logout == None and logout > login ):
             out = str.format('{0:%H:%M}', logout)
         else:
             out = "     "
-        line = str.format(' {0:%H:%M}  {1:14} {2:32} {3} ', login, nickname, name, out)
+        line = str.format(' {0:%H:%M}  {1:17} {2:29} {3} ', login, nickname, name, out)
 
         return line
             
@@ -348,11 +365,15 @@ class Register(ttk.Frame):
 
         self.LoadRegister()     # Update the Register List
         
-        tk.messagebox.showinfo("Welcome Back " + self.user['FirstName'] + "!", 
-            "Hi " + self.user['FirstName'] + 
-            ", you are now logged in.\n\nYou last logged in at: " + self.user['LastSeen'].strftime('%H:%M on %a %d-%b-%y') + 
-            "\n\nWelcome back!")
-        
+        if(self.user['LastSeen'] != None):
+            tk.messagebox.showinfo("Welcome Back " + self.user['FirstName'] + "!", 
+                "Hi " + self.user['FirstName'] + 
+                ", you are now logged in.\n\nYou last logged in at: " + self.user['LastSeen'].strftime('%H:%M on %a %d-%b-%y') + 
+                "\n\nWelcome back!")
+        else:
+            tk.messagebox.showinfo("Welcome " + self.user['FirstName'] + "!", 
+                "Hi " + self.user['FirstName'] + ", you are now logged in.\n\nHope you enjoy the dojo.")
+
         # Give Fred a special welcome 'fredjellis' = 17
         #if self.user['UserID'] == 17:
         #    self.WelcomeFred()
@@ -365,12 +386,16 @@ class Register(ttk.Frame):
         # If we have any 'ticks' we will assume we are performing a 'mentor logout' of one or more members
         # Mentor has to provide their username/password then all 'ticked' users will be logged out
         locount = 0
+        incount = 0
         for member, flag in self.registerlist.indojo.items():
+            incount += 1
             if(flag.get()):
                 locount += 1
 
         if( locount >= 1 ):
-            if(tk.messagebox.askyesno("Mentor Logout", "You have select " + str(locount) + " users to logout.\n\nYou need to be a mentor to do this.\n\nProceed?")):
+            if(tk.messagebox.askyesno("Mentor Logout", "You have select " + str(locount) + \
+                " users to logout.\n\nYou need to be a mentor to do this.\n\nProceed?\n\n" + \
+                " (Did you know there's a new feature that logs out all users without all that tedious ticking as well?)")):
                 doit = MentorPasswordDialog(root, "Mentor Multi-Logout", None).result 
                 if( doit == 1 ):
                     # OK - log them all out
@@ -400,9 +425,18 @@ class Register(ttk.Frame):
         # OK - we have a valid login attempt - but are we already logged out?
         register = mysqldb.GetRegister(self.dojoid, self.user['UserID'])
         if( register == None or not register['Logout'] == None ):
-            if(tk.messagebox.askyesno("Login?", "You're currently logged OUT. Do you want to login again?")):
+            if(tk.messagebox.askyesno("Login?", "You're already logged OUT! Do you want to log in again?")):
                 self.Login()
             return
+
+        # If a mentor logs out we will offer an option to log out everyone else at the same time
+        # even if no others selected - saves tedious selection...
+        if( mysqldb.GetMentor(name, password) != None and incount > 1):
+            if(tk.messagebox.askyesno("Group Logout", "Hey Mentor - do you want to log out the other " + str(incount-1) + " users at the same time?")):
+                for member, flag in self.registerlist.indojo.items():
+                    mysqldb.Logout(member)
+                self.LoadRegister()
+                return       
 
         # We can  now log out, update the list and counts.
         # Easiest way is to update register and then re-load the whole list
@@ -429,9 +463,11 @@ class Register(ttk.Frame):
 # Our main program loop - sets window title and size then executes mainloop()
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry("1024x720")
+    # Start maximised (get screen dimensions and use to set geometry)
+    root.geometry("%dx%d+0+0" % (root.winfo_screenwidth(), root.winfo_screenheight()))
     root.title("Dojo Register " + VERSION)
-    root.wm_iconbitmap(bitmap="images\\book.ico")
+    if(os.name == 'nt'):                  # Windows reports as 'nt' - Linux as 'posix'
+        root.wm_iconbitmap(IMG_BOOK_ICO)  # Icon doesn't work on Linux - probably need different format file
     root.columnconfigure(0, weight=1)     # We want to resize and use all window width
     root.rowconfigure(0, weight=1)        # We want to resize and use all window height
     defaultbg = root.cget('bg')
