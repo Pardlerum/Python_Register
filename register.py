@@ -1,3 +1,8 @@
+# Dependencies
+# bcrypt : pip3 install bcrypt
+# mysql : sudo apt-get install python3-pymysql
+# tkinter : sudo apt-get install python3-tk
+
 # System Imports
 import tkinter as tk
 from tkinter import ttk
